@@ -57,9 +57,9 @@ local function tokenize(str, div, len)
 	return result
 end
 
-local jwt = {}
+local luajwt = {}
 
-function jwt.encode(data, key, alg)
+function luajwt.encode(data, key, alg)
 	if type(data) ~= 'table' then return nil, "Argument #1 must be table" end
 	if type(key) ~= 'string' then return nil, "Argument #2 must be string" end
 
@@ -85,7 +85,7 @@ function jwt.encode(data, key, alg)
 	return table.concat(segments, ".")
 end
 
-function jwt.decode(data, key, verify)
+function luajwt.decode(data, key, verify)
 	if type(data) ~= 'string' then return nil, "Argument #1 must be string" end
 	if type(key) ~= 'string' then return nil, "Argument #2 must be string" end
 
@@ -123,15 +123,15 @@ function jwt.decode(data, key, verify)
 		end
 
 		if body.exp and os.time() >= body.exp then
-			return nil, "Expired Token"
+			return nil, "Invalid exp value"
 		end
 
 		if body.nbf and os.time() < body.nbf then
-			return nil, "Nbf token"
+			return nil, "Invalid nbf value"
 		end
 	end
 
 	return body
 end
 
-return jwt
+return luajwt
