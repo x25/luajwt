@@ -1,14 +1,14 @@
 package = "luajwt"
-version = "1.0.1"
+version = "1.1-1"
 source = {
-  url = "https://github.com/x25/jwt-lua/archive/v1.0.1.tar.gz",
-  dir = "lua-jwt-1.0.1"
+  url = "git://github.com/x25/luajwt",
+  tag = "v1.1"
 }
 description = {
   summary = "JSON Web Tokens for Lua",
   detailed = [[
   ]],
-  homepage = "https://github.com/x25/jwt-lua",
+  homepage = "https://github.com/x25/luajwt",
   license = "MIT <http://opensource.org/licenses/MIT>"
 }
 dependencies = {

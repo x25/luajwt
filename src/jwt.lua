@@ -23,7 +23,7 @@ local function b64_encode(input)
 end
 
 local function b64_decode(input)
-	input = input:gsub('\n', '')
+--	input = input:gsub('\n', ''):gsub(' ', '')
 
 	local reminder = #input % 4
 
