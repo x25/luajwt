@@ -1,4 +1,4 @@
-ngx-jwt-lua
+luajwt
 ===========
 
-JSON Web Token module for OpenResty
+JSON Web Tokens for Lua
