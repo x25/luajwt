@@ -22,16 +22,14 @@ local key = "example_key"
 local claim = {
 	iss = "12345678",
 	nbf = 1405108000,
+	exp = os.time() + 3600,
 }
-
-claim.exp = os.time() + 3600
 
 local alg = "HS256" -- default alg
 local token, err = luajwt.encode(claim, key, alg)
 
 print("Token:")
 print(token, err, "\n")
-
 
 local validate = true -- validate exp and nbf (default: true)
 local decoded, err = luajwt.decode(token, key, validate)
