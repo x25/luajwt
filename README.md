@@ -4,7 +4,7 @@ luajwt
 JSON Web Tokens for Lua
 
 ```bash
-# luarocks install --server=http://rocks.moonscript.org luajwt
+$ sudo luarocks install --server=http://rocks.moonscript.org luajwt
 ```
 
 ## Usage
@@ -12,51 +12,57 @@ JSON Web Tokens for Lua
 Basic usage:
 
 ```lua
-local luajwt = require "luajwt"
+local jwt = require "luajwt"
 
 local key = "example_key"
 
-local claim = {
+local payload = {
 	iss = "12345678",
-	nbf = 1405108000,
+	nbf = os.time(),
 	exp = os.time() + 3600,
 }
 
-local alg = "HS256" -- (default: HS256)
-local token, err = luajwt.encode(claim, key, alg)
+-- encode
+local alg = "HS256" -- (default)
+local token, err = jwt.encode(payload, key, alg)
 
--- Token: (linebreaks added for readability)
---[[ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxMjM0NTY3OC
-IsIm5iZiI6MTQwNTEwODAwMCwiZXhwIjoxNDA1MTgxOTE2fQ._Gvr99eMoi0mWxI
-xWOIAexN7UXO06GbpnEgkxdQkeXQ ]]--
+-- token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIx(cutted)...
 
-local validate = true -- validate exp and nbf (default: true)
-local decoded, err = luajwt.decode(token, key, validate)
+-- decode and validate
+local validate = true -- validate signature, exp and nbf (default: true)
+local decoded, err = jwt.decode(token, key, validate)
 
--- Decoded: { ["iss"] = 12345678, ["nbf"] = 1405108000, ["exp"] = 1405181916 }
+-- decoded: { ["iss"] = 12345678, ["nbf"] = 1405108000, ["exp"] = 1405181916 }
+
+-- only decode
+local unsafe, err = jwt.decode(token)
+
+-- unsafe:  { ["iss"] = 12345678, ["nbf"] = 1405108000, ["exp"] = 1405181916 }
+
 ```
 
-An openresty/ngx_lua example:
+An openresty/nginx lua jwt auth example:
 
 ```
+# nginx.conf
 location /auth {
 	content_by_lua '
-		local luajwt = require "luajwt"
+		local jwt = require "luajwt"
 
 		local args = ngx.req.get_uri_args(1)
 
 		if not args.jwt then
-		        ngx.say("Undefined token")
-        		return
+
+			return ngx.say("Where is token?")
 		end
 
-		local key = "SECRET_PASSWORD"
+		local key = "SECRET"
 
-		local ok, err = luajwt.decode(args.jwt, key)
+		local ok, err = jwt.decode(args.jwt, key)
 
 		if not ok then
-		        ngx.say("Error: ", err)
-        		return
+
+			return ngx.say("Error: ", err)
 		end
 
 		ngx.say("Welcome!")
@@ -67,7 +73,7 @@ location /auth {
 Generate token and try:
 
 ```bash
-curl your.server/auth?jwt=TOKEN
+$ curl your.server/auth?jwt=TOKEN
 ```
 
 ## Algorithms

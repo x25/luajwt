@@ -1,9 +1,9 @@
 package = "luajwt"
-version = "1.2-2"
+version = "1.3-1"
 
 source = {
 	url = "git://github.com/x25/luajwt",
-	tag = "v1.2"
+	tag = "v1.3"
 }
 
 description = {

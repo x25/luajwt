@@ -57,9 +57,9 @@ local function tokenize(str, div, len)
 	return result
 end
 
-local luajwt = {}
+local M = {}
 
-function luajwt.encode(data, key, alg)
+function M.encode(data, key, alg)
 	if type(data) ~= 'table' then return nil, "Argument #1 must be table" end
 	if type(key) ~= 'string' then return nil, "Argument #2 must be string" end
 
@@ -85,13 +85,10 @@ function luajwt.encode(data, key, alg)
 	return table.concat(segments, ".")
 end
 
-function luajwt.decode(data, key, verify)
+function M.decode(data, key, verify)
+	if key and verify == nil then verify = true end
 	if type(data) ~= 'string' then return nil, "Argument #1 must be string" end
-	if type(key) ~= 'string' then return nil, "Argument #2 must be string" end
-
-	if verify == nil then 
-		verify = true 
-	end
+	if verify and type(key) ~= 'string' then return nil, "Argument #2 must be string" end
 
 	local token = tokenize(data, '.', 3)
 
@@ -109,7 +106,7 @@ function luajwt.decode(data, key, verify)
 	end)	
 
 	if not ok then
-		return nil, "Invalid token data"
+		return nil, "Invalid json"
 	end
 
 	if verify then
@@ -123,15 +120,15 @@ function luajwt.decode(data, key, verify)
 		end
 
 		if body.exp and os.time() >= body.exp then
-			return nil, "Invalid exp value"
+			return nil, "Invalid exp"
 		end
 
 		if body.nbf and os.time() < body.nbf then
-			return nil, "Invalid nbf value"
+			return nil, "Invalid nbf"
 		end
 	end
 
 	return body
 end
 
-return luajwt
+return M

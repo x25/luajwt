@@ -15,24 +15,22 @@ local function t2s(o)
 end
 
 -- 
-local luajwt = require "luajwt"
+local JWT = require "luajwt"
 
 local key = "example_key"
 
 local claim = {
 	iss = "12345678",
-	nbf = 1405108000,
+	nbf = os.time(),
 	exp = os.time() + 3600,
 }
 
 local alg = "HS256" -- default alg
-local token, err = luajwt.encode(claim, key, alg)
+local token, err = JWT.encode(claim, key, alg)
 
-print("Token:")
-print(token, err, "\n")
+print("Token:", token)
 
 local validate = true -- validate exp and nbf (default: true)
-local decoded, err = luajwt.decode(token, key, validate)
+local decoded, err = JWT.decode(token, key, validate)
 
-print("Claim:")
-print(t2s(decoded), err)
+print("Claim:", t2s(decoded) )
