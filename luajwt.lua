@@ -111,7 +111,23 @@ function M.decode(data, key, verify)
 
 	if verify then
 
-		if not header.alg or not alg_verify[header.alg] then
+		if not header.typ or header.typ ~= "JWT" then
+			return nil, "Invalid typ"
+		end
+
+		if not header.alg or type(header.alg) ~= "string" then
+			return nil, "Invalid alg"
+		end
+
+		if body.exp and type(body.exp) ~= "number" then
+			return nil, "exp must be number"
+		end
+
+		if body.nbf and type(body.nbf) ~= "number" then
+			return nil, "nbf must be number"
+		end
+
+		if not alg_verify[header.alg] then
 			return nil, "Algorithm not supported"
 		end
 
@@ -120,11 +136,11 @@ function M.decode(data, key, verify)
 		end
 
 		if body.exp and os.time() >= body.exp then
-			return nil, "Invalid exp"
+			return nil, "Not acceptable by exp"
 		end
 
 		if body.nbf and os.time() < body.nbf then
-			return nil, "Invalid nbf"
+			return nil, "Not acceptable by nbf"
 		end
 	end
 

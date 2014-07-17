@@ -1,5 +1,5 @@
 package = "luajwt"
-version = "1.3-1"
+version = "1.3-2"
 
 source = {
 	url = "git://github.com/x25/luajwt",
@@ -8,7 +8,7 @@ source = {
 
 description = {
 	summary = "JSON Web Tokens for Lua",
-	detailed = "Very fast and compatible with pyjwt, php-jwt and ruby-jwt",
+	detailed = "Very fast and compatible with pyjwt, php-jwt, ruby-jwt, node-jwt-simple and others",
 	homepage = "https://github.com/x25/luajwt",
 	license = "MIT <http://opensource.org/licenses/MIT>"
 }
