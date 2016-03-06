@@ -1,9 +1,9 @@
 package = "luajwt"
-version = "1.3-2"
+version = "1.3-4"
 
 source = {
 	url = "git://github.com/x25/luajwt",
-	tag = "v1.3"
+	tag = "v1.4"
 }
 
 description = {
@@ -17,7 +17,7 @@ dependencies = {
 	"lua >= 5.1",
 	"luacrypto >= 0.3.2-1",
 	"lua-cjson >= 2.1.0",
-	"lbase64 >= 20120820-1"
+	"lbase64 >= 20120807-3"
 }
 
 build = {
