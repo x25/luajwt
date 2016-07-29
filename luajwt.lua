@@ -12,6 +12,14 @@ local alg_verify = {
 	['HS256'] = function(data, signature, key) return signature == alg_sign['HS256'](data, key) end,
 	['HS384'] = function(data, signature, key) return signature == alg_sign['HS384'](data, key) end,
 	['HS512'] = function(data, signature, key) return signature == alg_sign['HS512'](data, key) end,
+	['RS256'] = function(data, signature, key)
+		local pubkey = crypto.pkey.from_pem(key)
+		if pubkey ~= nil then
+			return crypto.verify("sha256", data, signature, pubkey)
+		else
+			return nil, "Invalid PEM key configured"
+		end
+	end
 }
 
 local function b64_encode(input)	
@@ -131,7 +139,11 @@ function M.decode(data, key, verify)
 			return nil, "Algorithm not supported"
 		end
 
-		if not alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key) then
+		local verify_result, error
+			= alg_verify[header.alg](headerb64 .. "." .. bodyb64, sig, key);
+		if verify_result == nil then
+			return nil, error
+		elseif verify_result == false then
 			return nil, "Invalid signature"
 		end
 
