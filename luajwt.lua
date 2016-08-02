@@ -6,6 +6,14 @@ local alg_sign = {
 	['HS256'] = function(data, key) return crypto.hmac.digest('sha256', data, key, true) end,
 	['HS384'] = function(data, key) return crypto.hmac.digest('sha384', data, key, true) end,
 	['HS512'] = function(data, key) return crypto.hmac.digest('sha512', data, key, true) end,
+	['RS256'] = function(data, key)
+		local privkey = crypto.pkey.from_pem(key, true)
+		if privkey == nil then
+			return nil, "Not a private PEM key"
+		else
+			return crypto.sign("sha256", data, privkey)
+		end
+	end
 }
 
 local alg_verify = {
@@ -14,10 +22,10 @@ local alg_verify = {
 	['HS512'] = function(data, signature, key) return signature == alg_sign['HS512'](data, key) end,
 	['RS256'] = function(data, signature, key)
 		local pubkey = crypto.pkey.from_pem(key)
-		if pubkey ~= nil then
-			return crypto.verify("sha256", data, signature, pubkey)
+		if pubkey == nil then
+			return nil, "Not a public PEM key"
 		else
-			return nil, "Invalid PEM key configured"
+			return crypto.verify("sha256", data, signature, pubkey)
 		end
 	end
 }
@@ -85,8 +93,10 @@ function M.encode(data, key, alg)
 	}
 
 	local signing_input = table.concat(segments, ".")
-
-	local signature = alg_sign[alg](signing_input, key)
+	local signature, error = alg_sign[alg](signing_input, key)
+	if signature == nil then
+		return nil, error
+	end
 
 	segments[#segments+1] = b64_encode(signature)
 
